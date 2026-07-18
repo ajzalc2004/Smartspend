@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Exclude all directories from cloud backups to protect user privacy -->
+        <exclude path="." />
+    </cloud-backup>
+    <device-transfer>
+        <include path="." />
+    </device-transfer>
+</data-extraction-rules>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude database files from automatic system backups to preserve offline privacy -->
+    <exclude domain="database" path="smartspends_db" />
+</full-backup-content>
