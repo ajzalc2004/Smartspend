@@ -1,5 +1,7 @@
 # SmartSpends
 
+![SmartSpends Dashboard](screenshots/dashboard.png)
+
 SmartSpends is a modern, offline-first, and privacy-respecting Android application designed to track user finances. It automatically parses transactional bank SMS messages to record debits and credits, while also allowing users to manually enter transactions. All data is stored locally in a Room database to prioritize user privacy.
 
 ## Key Features
