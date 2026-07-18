@@ -119,6 +119,12 @@ class TransactionsViewModel @Inject constructor(
         }
     }
 
+    fun updateTransactionCategory(transaction: TransactionEntity, newCategory: String) {
+        viewModelScope.launch {
+            repository.insertTransaction(transaction.copy(category = newCategory))
+        }
+    }
+
     private data class Params(
         val query: String,
         val type: String?,

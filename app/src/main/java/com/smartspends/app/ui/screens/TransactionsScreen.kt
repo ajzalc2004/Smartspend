@@ -395,8 +395,50 @@ fun TransactionsScreen(
 
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
 
-                    // Detail items list
-                    DetailItem(label = "Category", value = tx.category)
+                    // Detail items list with category editing dropdown
+                    var isCategoryDropdownExpanded by remember { mutableStateOf(false) }
+                    val expenseCategories = listOf("Food", "Fuel", "Grocery", "Shopping", "Travel", "Bills", "Entertainment", "Medicine", "Education", "Rent", "Other")
+                    val incomeCategories = listOf("Salary", "Interest", "Freelance", "Gift", "Refund", "Investment", "Other")
+                    val availableCategories = if (isExpense) expenseCategories else incomeCategories
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Category",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Box {
+                            Text(
+                                text = "${tx.category} ▾",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .clickable { isCategoryDropdownExpanded = true }
+                                    .padding(vertical = 4.dp, horizontal = 8.dp)
+                            )
+                            DropdownMenu(
+                                expanded = isCategoryDropdownExpanded,
+                                onDismissRequest = { isCategoryDropdownExpanded = false }
+                            ) {
+                                availableCategories.forEach { categoryName ->
+                                    DropdownMenuItem(
+                                        text = { Text(categoryName) },
+                                        onClick = {
+                                            viewModel.updateTransactionCategory(tx, categoryName)
+                                            selectedTransactionForDetails = tx.copy(category = categoryName)
+                                            isCategoryDropdownExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
                     DetailItem(label = "Date & Time", value = "${tx.date} at ${tx.time}")
                     DetailItem(label = "Transaction Mode", value = tx.transactionMode)
                     DetailItem(label = "Record Source", value = if (tx.source == "SMS") "Auto SMS Tracking" else "Manual Entry")
