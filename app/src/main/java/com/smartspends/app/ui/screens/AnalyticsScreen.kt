@@ -40,11 +40,12 @@ fun AnalyticsScreen(
     val categoryColors = listOf(
         Color(0.96f, 0.42f, 0.42f), // Food - Rose/Red
         Color(1.00f, 0.62f, 0.26f), // Fuel - Orange
+        Color(0.18f, 0.80f, 0.44f), // Grocery - Bright Green
         Color(0.33f, 0.63f, 1.00f), // Shopping - Blue
         Color(0.11f, 0.82f, 0.63f), // Travel - Mint
         Color(0.37f, 0.15f, 0.80f), // Bills - Violet
         Color(0.95f, 0.41f, 0.88f), // Entertainment - Pink
-        Color(0.06f, 0.67f, 0.52f), // Healthcare - Green
+        Color(0.90f, 0.30f, 0.26f), // Medicine - Red/Rose
         Color(0.00f, 0.82f, 0.83f), // Education - Cyan
         Color(0.93f, 0.32f, 0.33f), // Rent - Soft Red
         Color(0.51f, 0.58f, 0.65f)  // Other - Grey

@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -27,6 +28,8 @@ import com.smartspends.app.domain.usecase.RecurringTransaction
 import com.smartspends.app.ui.theme.Emerald500
 import com.smartspends.app.ui.theme.Rose500
 import java.util.Locale
+import java.util.Calendar
+import android.app.DatePickerDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +43,37 @@ fun DashboardScreen(
     val recentTransactions by viewModel.recentTransactions.collectAsState()
     val recurringTransactions by viewModel.recurringTransactions.collectAsState()
     val currencySymbol by viewModel.currencySymbol.collectAsState()
+    val customStart by viewModel.customStartDate.collectAsState()
+    val customEnd by viewModel.customEndDate.collectAsState()
+    val customStats by viewModel.customStats.collectAsState()
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+
+    val showDatePickerRange = {
+        DatePickerDialog(
+            context,
+            { _, year, month, day ->
+                val startStr = String.format(Locale.getDefault(), "%d-%02d-%02d", year, month + 1, day)
+                DatePickerDialog(
+                    context,
+                    { _, year2, month2, day2 ->
+                        val endStr = String.format(Locale.getDefault(), "%d-%02d-%02d", year2, month2 + 1, day2)
+                        viewModel.setCustomDateRange(startStr, endStr)
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                ).apply {
+                    setTitle("Select End Date")
+                }.show()
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).apply {
+            setTitle("Select Start Date")
+        }.show()
+    }
 
     var selectedPeriodTab by remember { mutableIntStateOf(2) } // 0: Today, 1: Week, 2: Month
 
@@ -101,23 +135,35 @@ fun DashboardScreen(
                     SegmentedButton(
                         selected = selectedPeriodTab == 0,
                         onClick = { selectedPeriodTab = 0 },
-                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3)
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 4)
                     ) {
                         Text("Today")
                     }
                     SegmentedButton(
                         selected = selectedPeriodTab == 1,
                         onClick = { selectedPeriodTab = 1 },
-                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3)
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 4)
                     ) {
                         Text("Week")
                     }
                     SegmentedButton(
                         selected = selectedPeriodTab == 2,
                         onClick = { selectedPeriodTab = 2 },
-                        shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3)
+                        shape = SegmentedButtonDefaults.itemShape(index = 2, count = 4)
                     ) {
                         Text("Month")
+                    }
+                    SegmentedButton(
+                        selected = selectedPeriodTab == 3,
+                        onClick = {
+                            selectedPeriodTab = 3
+                            if (customStart == null || customEnd == null) {
+                                showDatePickerRange()
+                            }
+                        },
+                        shape = SegmentedButtonDefaults.itemShape(index = 3, count = 4)
+                    ) {
+                        Text("Custom")
                     }
                 }
             }
@@ -127,7 +173,11 @@ fun DashboardScreen(
                 val (income, expense, savings) = when (selectedPeriodTab) {
                     0 -> Triple(stats.todayIncome, stats.todayExpense, stats.todaySavings)
                     1 -> Triple(stats.weekIncome, stats.weekExpense, stats.weekSavings)
-                    else -> Triple(stats.monthIncome, stats.monthExpense, stats.monthSavings)
+                    2 -> Triple(stats.monthIncome, stats.monthExpense, stats.monthSavings)
+                    else -> {
+                        val c = customStats
+                        if (c != null) Triple(c.income, c.expense, c.savings) else Triple(0.0, 0.0, 0.0)
+                    }
                 }
 
                 Card(
@@ -140,11 +190,29 @@ fun DashboardScreen(
                             .fillMaxWidth()
                             .padding(24.dp)
                     ) {
-                        Text(
-                            text = "Net Savings",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = if (selectedPeriodTab == 3 && customStart != null && customEnd != null) {
+                                    "Savings ($customStart to $customEnd)"
+                                } else {
+                                    "Net Savings"
+                                },
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                            )
+                            if (selectedPeriodTab == 3) {
+                                Text(
+                                    text = "Change Dates",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.clickable { showDatePickerRange() }
+                                )
+                            }
+                        }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "$currencySymbol${String.format(Locale.getDefault(), "%,.2f", savings)}",

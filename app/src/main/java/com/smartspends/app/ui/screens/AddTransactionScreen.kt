@@ -48,7 +48,7 @@ fun AddTransactionScreen(
 
     var isCategoryDropdownExpanded by remember { mutableStateOf(false) }
 
-    val expenseCategories = listOf("Food", "Fuel", "Shopping", "Travel", "Bills", "Entertainment", "Healthcare", "Education", "Rent", "Other")
+    val expenseCategories = listOf("Food", "Fuel", "Grocery", "Shopping", "Travel", "Bills", "Entertainment", "Medicine", "Education", "Rent", "Other")
     val incomeCategories = listOf("Salary", "Interest", "Freelance", "Gift", "Refund", "Investment", "Other")
     val currentCategories = if (type == "EXPENSE") expenseCategories else incomeCategories
 

@@ -215,10 +215,11 @@ object SmsParser {
                 lowerBody.contains("hpcl") || lowerBody.contains("bpcl") || lowerBody.contains("iocl") || 
                 lowerBody.contains("shell") || lowerBody.contains("cng") -> "Fuel"
                 
-                lowerBody.contains("amazon") || lowerBody.contains("flipkart") || lowerBody.contains("myntra") || 
-                lowerBody.contains("ajio") || lowerBody.contains("shopping") || lowerBody.contains("retail") || 
                 lowerBody.contains("blinkit") || lowerBody.contains("zepto") || lowerBody.contains("grocery") || 
-                lowerBody.contains("groceries") || lowerBody.contains("mart") -> "Shopping"
+                lowerBody.contains("groceries") || lowerBody.contains("mart") || lowerBody.contains("bigbasket") -> "Grocery"
+
+                lowerBody.contains("amazon") || lowerBody.contains("flipkart") || lowerBody.contains("myntra") || 
+                lowerBody.contains("ajio") || lowerBody.contains("shopping") || lowerBody.contains("retail") -> "Shopping"
                 
                 lowerBody.contains("uber") || lowerBody.contains("ola") || lowerBody.contains("rapido") || 
                 lowerBody.contains("metro") || lowerBody.contains("irctc") || lowerBody.contains("railway") || 
@@ -237,7 +238,8 @@ object SmsParser {
                 
                 lowerBody.contains("pharmacy") || lowerBody.contains("hospital") || lowerBody.contains("clinic") || 
                 lowerBody.contains("apollo") || lowerBody.contains("pharmeasy") || lowerBody.contains("doctor") || 
-                lowerBody.contains("medical") || lowerBody.contains("healthcare") -> "Healthcare"
+                lowerBody.contains("medical") || lowerBody.contains("healthcare") || lowerBody.contains("medicine") || 
+                lowerBody.contains("tablet") -> "Medicine"
                 
                 lowerBody.contains("school") || lowerBody.contains("college") || lowerBody.contains("udemy") || 
                 lowerBody.contains("coursera") || lowerBody.contains("fees") || lowerBody.contains("tuition") || 

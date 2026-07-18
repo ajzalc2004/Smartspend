@@ -59,7 +59,7 @@ class AddTransactionViewModel @Inject constructor(
 
     fun setType(value: String) {
         _type.value = value
-        if (value == "EXPENSE" && _category.value !in listOf("Food", "Fuel", "Shopping", "Travel", "Bills", "Entertainment", "Healthcare", "Education", "Rent", "Other")) {
+        if (value == "EXPENSE" && _category.value !in listOf("Food", "Fuel", "Grocery", "Shopping", "Travel", "Bills", "Entertainment", "Medicine", "Education", "Rent", "Other")) {
             _category.value = "Food"
         } else if (value == "INCOME" && _category.value !in listOf("Salary", "Interest", "Freelance", "Gift", "Refund", "Investment", "Other")) {
             _category.value = "Salary"
