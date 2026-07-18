@@ -25,15 +25,15 @@ data class AnalyticsStats(
 class GetAnalyticsStatsUseCase @Inject constructor(
     private val repository: TransactionRepository
 ) {
-    operator fun invoke(): Flow<AnalyticsStats> {
+    operator fun invoke(startDate: String? = null, endDate: String? = null): Flow<AnalyticsStats> {
         val today = LocalDate.now()
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        val endStr = today.format(dateFormatter)
-        val start30DaysAgoStr = today.minusDays(30).format(dateFormatter)
+        val endStr = endDate ?: today.format(dateFormatter)
+        val startStr = startDate ?: today.minusDays(30).format(dateFormatter)
         
-        val categoryExpensesFlow = repository.getCategoryExpenses()
-        val dailyExpensesFlow = repository.getDailySpendingForPeriod(start30DaysAgoStr, endStr)
+        val categoryExpensesFlow = repository.getCategoryExpensesForPeriod(startStr, endStr)
+        val dailyExpensesFlow = repository.getDailySpendingForPeriod(startStr, endStr)
         
         val start6MonthsAgo = today.minusMonths(6).withDayOfMonth(1)
         val start6MonthsAgoStr = start6MonthsAgo.format(dateFormatter)

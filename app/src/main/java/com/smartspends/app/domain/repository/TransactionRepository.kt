@@ -33,6 +33,7 @@ interface TransactionRepository {
     fun getLargestIncome(): Flow<Double?>
     
     fun getCategoryExpenses(): Flow<List<CategorySum>>
+    fun getCategoryExpensesForPeriod(startDate: String, endDate: String): Flow<List<CategorySum>>
     fun getDailySpendingForPeriod(startDate: String, endDate: String): Flow<List<DailySum>>
     
     fun getUniqueBanks(): Flow<List<String>>

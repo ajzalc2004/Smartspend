@@ -6,10 +6,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import java.util.Calendar
+import android.app.DatePickerDialog
+import java.util.Locale
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,9 +28,6 @@ import com.smartspends.app.ui.components.DoubleBarChart
 import com.smartspends.app.ui.theme.Emerald500
 import com.smartspends.app.ui.theme.Indigo600
 import com.smartspends.app.ui.theme.Rose500
-import java.util.Locale
-
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -50,6 +50,38 @@ fun AnalyticsScreen(
         Color(0.93f, 0.32f, 0.33f), // Rent - Soft Red
         Color(0.51f, 0.58f, 0.65f)  // Other - Grey
     )
+
+    val selectedPeriodTab by viewModel.selectedPeriodTab.collectAsState()
+    val customStart by viewModel.startDate.collectAsState()
+    val customEnd by viewModel.endDate.collectAsState()
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+
+    val showDatePickerRange = {
+        DatePickerDialog(
+            context,
+            { _, year, month, day ->
+                val startStr = String.format(Locale.getDefault(), "%d-%02d-%02d", year, month + 1, day)
+                DatePickerDialog(
+                    context,
+                    { _, year2, month2, day2 ->
+                        val endStr = String.format(Locale.getDefault(), "%d-%02d-%02d", year2, month2 + 1, day2)
+                        viewModel.setCustomDateRange(startStr, endStr)
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                ).apply {
+                    setTitle("Select End Date")
+                }.show()
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).apply {
+            setTitle("Select Start Date")
+        }.show()
+    }
 
     LaunchedEffect(Unit) {
         viewModel.updateCurrencySymbol()
@@ -84,6 +116,64 @@ fun AnalyticsScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
+                // Period Selector Tabs
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    SegmentedButton(
+                        selected = selectedPeriodTab == 0,
+                        onClick = { viewModel.setPeriodTab(0) },
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 4)
+                    ) {
+                        Text("Today")
+                    }
+                    SegmentedButton(
+                        selected = selectedPeriodTab == 1,
+                        onClick = { viewModel.setPeriodTab(1) },
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 4)
+                    ) {
+                        Text("Week")
+                    }
+                    SegmentedButton(
+                        selected = selectedPeriodTab == 2,
+                        onClick = { viewModel.setPeriodTab(2) },
+                        shape = SegmentedButtonDefaults.itemShape(index = 2, count = 4)
+                    ) {
+                        Text("Month")
+                    }
+                    SegmentedButton(
+                        selected = selectedPeriodTab == 3,
+                        onClick = {
+                            viewModel.setPeriodTab(3)
+                            if (customStart == null || customEnd == null) {
+                                showDatePickerRange()
+                            }
+                        },
+                        shape = SegmentedButtonDefaults.itemShape(index = 3, count = 4)
+                    ) {
+                        Text("Custom")
+                    }
+                }
+
+                if (selectedPeriodTab == 3 && customStart != null && customEnd != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Showing: $customStart to $customEnd",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Change Dates",
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.clickable { showDatePickerRange() }
+                        )
+                    }
+                }
                 // Section 1: Category Expenses (Donut Chart)
                 Card(
                     modifier = Modifier.fillMaxWidth(),

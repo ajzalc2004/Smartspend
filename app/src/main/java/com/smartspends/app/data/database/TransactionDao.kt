@@ -74,6 +74,9 @@ interface TransactionDao {
     @Query("SELECT category, SUM(amount) as total FROM transactions WHERE type = 'EXPENSE' GROUP BY category")
     fun getCategoryExpenses(): Flow<List<CategorySum>>
 
+    @Query("SELECT category, SUM(amount) as total FROM transactions WHERE type = 'EXPENSE' AND date BETWEEN :startDate AND :endDate GROUP BY category")
+    fun getCategoryExpensesForPeriod(startDate: String, endDate: String): Flow<List<CategorySum>>
+
     @Query("SELECT date, SUM(amount) as total FROM transactions WHERE type = 'EXPENSE' AND date BETWEEN :startDate AND :endDate GROUP BY date ORDER BY date ASC")
     fun getDailySpendingForPeriod(startDate: String, endDate: String): Flow<List<DailySum>>
 

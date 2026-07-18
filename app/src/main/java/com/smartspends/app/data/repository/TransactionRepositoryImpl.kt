@@ -64,6 +64,9 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getCategoryExpenses(): Flow<List<CategorySum>> =
         transactionDao.getCategoryExpenses()
 
+    override fun getCategoryExpensesForPeriod(startDate: String, endDate: String): Flow<List<CategorySum>> =
+        transactionDao.getCategoryExpensesForPeriod(startDate, endDate)
+
     override fun getDailySpendingForPeriod(startDate: String, endDate: String): Flow<List<DailySum>> =
         transactionDao.getDailySpendingForPeriod(startDate, endDate)
 
